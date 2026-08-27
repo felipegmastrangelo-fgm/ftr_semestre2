@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bot de Clima — Arquitetura</title>
+<style>
+  :root{
+    --bg:#14100c; --bg2:#1e1712; --card:#241b14; --card2:#2a2018;
+    --bd:#3a2c20; --tx:#f3e9dd; --mut:#b8a996;
+    --or:#ff7a18; --or2:#ff9a3c; --ord:#e8590c;
+    --ok:#4cd07d; --no:#ff5c5c; --info:#5cc8ff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:radial-gradient(1200px 600px at 80% -10%,#2a1c10 0%,var(--bg) 55%);
+    color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;min-height:100vh}
+  .wrap{max-width:960px;margin:0 auto;padding:24px 20px 64px}
+  header.hero{padding:28px 0 8px}
+  .tag{display:inline-block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--or2);
+    border:1px solid var(--bd);padding:5px 12px;border-radius:999px;margin-bottom:16px}
+  h1{font-size:clamp(28px,6vw,44px);line-height:1.12;letter-spacing:-.02em;margin-bottom:12px}
+  h1 span{background:linear-gradient(135deg,var(--or2),var(--ord));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--mut);font-size:17px;max-width:680px}
+  h2{font-size:22px;margin:44px 0 18px;display:flex;align-items:center;gap:10px}
+  h2::before{content:"";width:10px;height:22px;border-radius:3px;background:linear-gradient(var(--or),var(--ord))}
+  .card{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--bd);
+    border-radius:16px;padding:20px 22px;margin-bottom:14px}
+  p.lead{color:var(--mut);margin-bottom:8px}
+  .pipe{display:flex;flex-direction:column;align-items:center;gap:0}
+  .step{width:100%;max-width:660px;background:linear-gradient(180deg,var(--card),var(--bg2));
+    border:1px solid var(--bd);border-radius:14px;padding:16px 20px}
+  .step .n{font-size:12px;color:var(--or2);letter-spacing:.1em;text-transform:uppercase}
+  .step h3{font-size:18px;margin:2px 0 4px}
+  .step p{color:var(--mut);font-size:14px}
+  .arrow{width:2px;height:26px;background:linear-gradient(var(--or),transparent);margin:2px 0;position:relative}
+  .arrow::after{content:"▼";position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);color:var(--or);font-size:11px}
+  .tree{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:640px){.tree{grid-template-columns:1fr}}
+  .branch{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px 18px}
+  .branch .h{font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+  .branch p{color:var(--mut);font-size:14px}
+  .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+  .d-ok{background:var(--ok)} .d-no{background:var(--no)}
+  .guard{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:640px){.guard{grid-template-columns:1fr}}
+  .g{background:var(--card);border:1px solid var(--bd);border-left:3px solid var(--or);border-radius:0 12px 12px 0;padding:14px 18px}
+  .g b{color:var(--tx)} .g p{color:var(--mut);font-size:14px;margin-top:2px}
+  .lock{font-size:15px;margin-right:6px}
+  footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--bd);color:var(--mut);font-size:13px;text-align:center}
+  .note{color:var(--mut);font-size:13px;font-style:italic;text-align:center;margin-top:8px}
+  .hl{display:flex;align-items:stretch;justify-content:center;gap:10px;flex-wrap:wrap}
+  .hlnode{flex:1;min-width:120px;background:var(--card2);border:1px solid var(--bd);border-radius:14px;
+    padding:16px 12px;text-align:center;display:flex;flex-direction:column;gap:3px;align-items:center}
+  .hlnode .ic{font-size:26px}
+  .hlnode span{font-weight:700;font-size:16px}
+  .hlnode small{color:var(--mut);font-size:12px}
+  .hlnode.tg{border-color:#2f6fb0}
+  .hlnode.n8n{border-color:var(--or)}
+  .hlar{display:flex;align-items:center;color:var(--or);font-size:24px;font-weight:700}
+  @media(max-width:600px){.hl{flex-direction:column}.hlar{transform:rotate(90deg)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <span class="tag">Como o bot foi construído</span>
+    <h1>Arquitetura do <span>Bot de Clima</span></h1>
+    <p class="sub">Visão conceitual do funcionamento: um fluxo direto e determinístico, sem IA e sem estado. Cada mensagem passa pelas mesmas etapas. Sem expor detalhes sensíveis.</p>
+  </header>
+
+  <h2>Fluxo em alto nível</h2>
+  <div class="card">
+    <div class="hl">
+      <div class="hlnode tg"><span class="ic">📥</span><span>Telegram</span><small>entrada</small></div>
+      <div class="hlar">→</div>
+      <div class="hlnode n8n"><span class="ic">⚙️</span><span>n8n</span><small>orquestração</small></div>
+      <div class="hlar">→</div>
+      <div class="hlnode"><span class="ic">🌐</span><span>OpenWeather</span><small>dados do clima</small></div>
+      <div class="hlar">→</div>
+      <div class="hlnode tg"><span class="ic">📤</span><span>Telegram</span><small>saída</small></div>
+    </div>
+  </div>
+
+  <h2>Visão geral</h2>
+  <div class="card">
+    <p class="lead">O bot combina três blocos simples:</p>
+    <ul style="list-style:none">
+      <li style="padding:6px 0 6px 26px;position:relative"><span style="position:absolute;left:0;color:var(--or2)">◆</span> <b>Orquestração de fluxo (n8n)</b> — recebe a mensagem do Telegram, prepara o texto e devolve a resposta.</li>
+      <li style="padding:6px 0 6px 26px;position:relative"><span style="position:absolute;left:0;color:var(--or2)">◆</span> <b>Fonte de dados meteorológicos</b> — a API da OpenWeather, que retorna a temperatura atual da cidade.</li>
+      <li style="padding:6px 0 6px 26px;position:relative"><span style="position:absolute;left:0;color:var(--or2)">◆</span> <b>Formatação da resposta</b> — monta uma mensagem curta e clara com a cidade e a temperatura em graus Celsius.</li>
+    </ul>
+    <p class="lead" style="margin-top:10px">Não há inteligência artificial nem memória: o bot é <b>sem estado</b> — cada mensagem é tratada de forma independente.</p>
+  </div>
+
+  <h2>Fluxo de uma mensagem</h2>
+  <div class="card">
+    <div class="pipe">
+      <div class="step"><div class="n">Entrada</div><h3>Mensagem do usuário</h3><p>O usuário envia o nome de uma cidade pelo Telegram.</p></div>
+      <div class="arrow"></div>
+      <div class="step"><div class="n">Etapa 1 — Captura</div><h3>Texto vira a variável "queue"</h3><p>A mensagem recebida é guardada na variável usada para a consulta.</p></div>
+      <div class="arrow"></div>
+      <div class="step"><div class="n">Etapa 2 — Normalização</div><h3>Limpeza do texto</h3><p>Remove espaços extras, tira acentos, deixa em minúsculas e garante o país (Brasil).</p></div>
+      <div class="arrow"></div>
+      <div class="step"><div class="n">Etapa 3 — Consulta</div><h3>OpenWeather</h3><p>Consulta a temperatura atual da cidade na API pública da OpenWeather, em Celsius e em português.</p></div>
+      <div class="arrow"></div>
+      <div class="step"><div class="n">Etapa 4 — Validação</div><h3>A cidade foi encontrada?</h3><p>Verifica se a resposta trouxe uma temperatura válida (ver os dois caminhos abaixo).</p></div>
+      <div class="arrow"></div>
+      <div class="step"><div class="n">Saída</div><h3>Resposta no Telegram</h3><p>Envia a temperatura formatada ou a mensagem de orientação.</p></div>
+    </div>
+  </div>
+
+  <h2>Dois caminhos possíveis</h2>
+  <div class="card">
+    <div class="tree">
+      <div class="branch">
+        <div class="h"><span class="dot d-ok"></span> Cidade encontrada</div>
+        <p>A API retornou a temperatura. O bot responde: <br><b>🌤️ A temperatura em [Cidade] é de [X]°C.</b></p>
+      </div>
+      <div class="branch">
+        <div class="h"><span class="dot d-no"></span> Cidade não encontrada</div>
+        <p>A API não localizou a cidade (nome inválido, saudação, cidade fora do Brasil). O bot responde: <br><b>❌ Cidade não encontrada. Use o formato Cidade,UF,BR.</b></p>
+      </div>
+    </div>
+  </div>
+
+  <h2>Cuidados do projeto</h2>
+  <div class="guard">
+    <div class="g"><b><span class="lock">🎯</span>Escopo fechado</b><p>O bot trata só temperatura de cidades do Brasil; a mensagem de erro orienta o formato correto.</p></div>
+    <div class="g"><b><span class="lock">🔑</span>Chave protegida</b><p>A chave da API não fica no fluxo exportado: é lida de uma variável de ambiente / credencial, fora do código.</p></div>
+    <div class="g"><b><span class="lock">🛡️</span>Tratamento de erro</b><p>Falhas da API ou cidade inexistente são desviadas para a mensagem de orientação, sem quebrar o bot.</p></div>
+    <div class="g"><b><span class="lock">⚡</span>Simples e determinístico</b><p>Sem IA e sem memória: mesma entrada, mesma saída. Fácil de auditar e barato de rodar.</p></div>
+  </div>
+  <p class="note">Este documento descreve a arquitetura de forma conceitual. Chaves e credenciais não são divulgadas por segurança.</p>
+
+  <footer>Projeto acadêmico de pós-graduação em Automação &nbsp;•&nbsp; Felipe Mastrangelo</footer>
+</div>
+</body>
+</html>

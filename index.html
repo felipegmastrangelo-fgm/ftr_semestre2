@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bot de Clima — Telegram</title>
+<style>
+  :root{
+    --bg:#14100c; --bg2:#1e1712; --card:#241b14; --card2:#2a2018;
+    --bd:#3a2c20; --tx:#f3e9dd; --mut:#b8a996;
+    --or:#ff7a18; --or2:#ff9a3c; --ord:#e8590c;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:radial-gradient(1000px 700px at 50% -20%,#33200f 0%,var(--bg) 55%);
+    color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;min-height:100vh;display:flex;flex-direction:column}
+  .wrap{max-width:820px;margin:0 auto;padding:24px 20px 48px;width:100%;flex:1;display:flex;flex-direction:column}
+  .hero{text-align:center;padding:56px 0 8px;margin-top:auto}
+  .glyph{font-size:64px;line-height:1;margin-bottom:20px;filter:drop-shadow(0 6px 20px rgba(255,122,24,.35))}
+  .tag{display:inline-block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--or2);
+    border:1px solid var(--bd);padding:5px 12px;border-radius:999px;margin-bottom:18px}
+  h1{font-size:clamp(32px,8vw,56px);line-height:1.08;letter-spacing:-.02em;margin-bottom:16px}
+  h1 span{background:linear-gradient(135deg,var(--or2),var(--ord));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--mut);font-size:18px;max-width:560px;margin:0 auto 32px}
+  .cta{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,var(--or),var(--ord));
+    color:#1a1206;font-weight:700;font-size:18px;text-decoration:none;padding:16px 32px;border-radius:14px;
+    box-shadow:0 10px 30px rgba(255,122,24,.35);transition:transform .15s, box-shadow .15s}
+  .cta:hover{transform:translateY(-2px);box-shadow:0 14px 38px rgba(255,122,24,.5)}
+  .hint{color:var(--mut);font-size:14px;margin-top:14px}
+  .hint code{background:var(--card2);border:1px solid var(--bd);border-radius:6px;padding:2px 8px;color:var(--or2);
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  .copybox{display:inline-flex;align-items:stretch;margin-top:20px;border:1px solid var(--bd);
+    border-radius:12px;overflow:hidden;background:var(--card2);max-width:100%}
+  .lnktxt{padding:12px 16px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:15px;color:var(--or2);word-break:break-all;display:flex;align-items:center}
+  .copybtn{border:0;border-left:1px solid var(--bd);background:transparent;color:var(--tx);
+    padding:12px 18px;font-size:14px;font-weight:600;cursor:pointer;transition:.2s;white-space:nowrap}
+  .copybtn:hover{background:#33261a;color:var(--or2)}
+  .copybtn.done{color:var(--or2)}
+  @media(max-width:480px){.copybox{flex-direction:column}.copybtn{border-left:0;border-top:1px solid var(--bd)}}
+  .feat{display:flex;justify-content:center;gap:24px;flex-wrap:wrap;margin-top:44px;color:var(--mut);font-size:14px}
+  .feat span{display:flex;align-items:center;gap:8px}
+  .feat b{color:var(--tx)}
+  footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--bd);color:var(--mut);font-size:13px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <div class="glyph">🌡️</div>
+    <span class="tag">Assistente no Telegram</span>
+    <h1>Bot de <span>Clima</span></h1>
+    <p class="sub">Consulte a <b>temperatura atual</b> de qualquer cidade do Brasil, direto no Telegram. É só enviar o nome da cidade.</p>
+
+    <a class="cta" href="https://t.me/FelipeGMastrangelo_WeatherBot" target="_blank" rel="noopener">Abrir no Telegram →</a>
+    <div class="copybox">
+      <span class="lnktxt" id="lnk">t.me/FelipeGMastrangelo_WeatherBot</span>
+      <button class="copybtn" id="copybtn" type="button">Copiar link</button>
+    </div>
+    <p class="hint">Ou copie o link e cole no navegador ou no Telegram. Ao entrar, envie uma cidade no formato <code>Cidade,UF,BR</code> (ex.: <code>São Paulo,SP,BR</code>).</p>
+
+    <div class="feat">
+      <span>🌡️ <b>Temperatura atual</b></span>
+      <span>🇧🇷 <b>Cidades do Brasil</b></span>
+      <span>💬 <b>No Telegram</b></span>
+      <span>⚡ <b>Resposta na hora</b></span>
+    </div>
+  </section>
+
+  <footer>Projeto acadêmico de pós-graduação em Automação &nbsp;•&nbsp; Felipe Mastrangelo</footer>
+</div>
+<script>
+  (function(){
+    var url='https://t.me/FelipeGMastrangelo_WeatherBot';
+    var btn=document.getElementById('copybtn');
+    if(!btn)return;
+    function ok(){var t=btn.textContent;btn.textContent='Copiado!';btn.classList.add('done');
+      setTimeout(function(){btn.textContent=t;btn.classList.remove('done');},1600);}
+    function fallback(){var ta=document.createElement('textarea');ta.value=url;ta.style.position='fixed';
+      ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();
+      try{document.execCommand('copy');ok();}catch(e){}document.body.removeChild(ta);}
+    btn.addEventListener('click',function(){
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(ok,fallback);}
+      else{fallback();}
+    });
+  })();
+</script>
+</body>
+</html>

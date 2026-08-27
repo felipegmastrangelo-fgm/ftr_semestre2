@@ -1,0 +1,41 @@
+PASSO A PASSO — FINALIZAR A ENTREGA (Bot de Clima da pós)
+==========================================================
+
+STATUS ATUAL (n8n): PRONTO ✅
+- Bot_v2 criado e ATIVO no n8n, dentro de Felipe_pos > Bot_v2
+  (workflow "Felipe_pos | Bot Temperatura v2").
+- Credencial do Telegram ligada nos 3 nós.
+- Credencial do OpenWeather ligada (injeta o appid; não precisa de env var no servidor).
+- Bot antigo (elaborado) DESATIVADO — só o v2 responde agora no @FelipeGMastrangelo_WeatherBot.
+- Você já pode testar no Telegram (mande: São Paulo,SP,BR / Recife,PE,BR / uma cidade inexistente).
+
+O QUE FALTA: só publicar no GitHub.
+
+--------------------------------------------------------------
+ETAPA ÚNICA — PUBLICAR NO GITHUB
+--------------------------------------------------------------
+1. Crie o repositório PÚBLICO chamado: chatbot-telegram  (https://github.com/new)
+2. Suba os arquivos (Add file > Upload files):
+   OBRIGATÓRIOS:
+     - workflow-chatbot-telegram.json
+     - workflow-telegram-chatbot.json   (idêntico; os dois nomes que o material cita)
+     - README.md
+   RECOMENDADOS:
+     - .env.example
+     - docker-compose.yml
+   OPCIONAL (bônus): pasta paginas-site-opcional (os 3 HTMLs)
+   NÃO precisa subir: este PASSO-A-PASSO.txt
+3. Commit.
+
+--------------------------------------------------------------
+CHECKLIST FINAL
+--------------------------------------------------------------
+[ ] Repositório PÚBLICO e chamado chatbot-telegram.
+[ ] Tem workflow-chatbot-telegram.json e README.md.
+[ ] Nenhum token/chave real dentro dos arquivos (no repo a chave é só a variável OPENWEATHER_API_KEY).
+[ ] Testou no Telegram: 3 cidades OK + 1 inexistente dá a mensagem de erro.
+[ ] Copie o link do repositório e envie na plataforma da pós.
+
+Obs.: no repositório a chave da OpenWeather entra como variável de ambiente
+(OPENWEATHER_API_KEY), como o enunciado exige. No n8n que está no ar ela já está
+configurada como credencial. São coisas separadas e ambas corretas.

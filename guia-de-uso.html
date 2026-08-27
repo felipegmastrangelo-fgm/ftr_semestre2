@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bot de Clima — Guia de Uso</title>
+<style>
+  :root{
+    --bg:#14100c; --bg2:#1e1712; --card:#241b14; --card2:#2a2018;
+    --bd:#3a2c20; --tx:#f3e9dd; --mut:#b8a996;
+    --or:#ff7a18; --or2:#ff9a3c; --ord:#e8590c;
+    --ok:#4cd07d; --no:#ff5c5c;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:radial-gradient(1200px 600px at 80% -10%,#2a1c10 0%,var(--bg) 55%);
+    color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;min-height:100vh}
+  .wrap{max-width:900px;margin:0 auto;padding:24px 20px 64px}
+  header.hero{padding:28px 0 8px}
+  .tag{display:inline-block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--or2);
+    border:1px solid var(--bd);padding:5px 12px;border-radius:999px;margin-bottom:16px}
+  h1{font-size:clamp(28px,6vw,44px);line-height:1.12;letter-spacing:-.02em;margin-bottom:12px}
+  h1 span{background:linear-gradient(135deg,var(--or2),var(--ord));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--mut);font-size:17px;max-width:640px}
+  h2{font-size:22px;margin:40px 0 16px;display:flex;align-items:center;gap:10px}
+  h2::before{content:"";width:10px;height:22px;border-radius:3px;background:linear-gradient(var(--or),var(--ord))}
+  .card{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--bd);
+    border-radius:16px;padding:20px 22px;margin-bottom:14px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  ul{list-style:none}
+  li{padding:8px 0 8px 30px;position:relative;color:var(--tx)}
+  li small{color:var(--mut);display:block;font-size:13px}
+  .yes li::before{content:"✓";position:absolute;left:0;color:var(--ok);font-weight:700}
+  .no li::before{content:"✕";position:absolute;left:0;color:var(--no);font-weight:700}
+  .ex{padding:8px 0 8px 30px;position:relative}
+  .ex::before{content:"›";position:absolute;left:6px;color:var(--or2);font-weight:700}
+  .chip{display:inline-block;background:var(--card2);border:1px solid var(--bd);border-radius:8px;
+    padding:3px 10px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px;color:var(--or2)}
+  .callout{border-left:3px solid var(--or);background:#20180f;border-radius:0 12px 12px 0;padding:14px 18px;color:var(--mut)}
+  .callout b{color:var(--tx)}
+  .reply{background:var(--card2);border:1px solid var(--bd);border-radius:12px;padding:12px 16px;margin-top:8px;font-size:15px}
+  footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--bd);color:var(--mut);font-size:13px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <span class="tag">Guia do usuário</span>
+    <h1>Como usar o <span>Bot de Clima</span></h1>
+    <p class="sub">Um bot no Telegram que informa a temperatura atual de qualquer cidade do Brasil. É simples e direto: você manda a cidade, ele responde a temperatura.</p>
+  </header>
+
+  <h2>Como usar</h2>
+  <div class="card yes">
+    <ul>
+      <li>Envie o <b>nome da cidade</b> — de preferência no formato <span class="chip">Cidade,UF,BR</span> <small>ex.: São Paulo,SP,BR</small></li>
+      <li>Também funciona só com o <b>nome da cidade</b> <small>ex.: "Bauru" — o bot completa o país automaticamente</small></li>
+      <li>O bot responde com a <b>temperatura atual</b> em graus Celsius</li>
+    </ul>
+  </div>
+
+  <h2>Exemplos</h2>
+  <div class="card">
+    <div class="ex"><span class="chip">São Paulo,SP,BR</span></div>
+    <div class="ex"><span class="chip">Recife,PE,BR</span></div>
+    <div class="ex"><span class="chip">Curitiba,PR,BR</span></div>
+    <div class="ex"><span class="chip">Bauru</span></div>
+    <div class="reply">Resposta do bot: <b>🌤️ A temperatura em São Paulo é de 25°C.</b></div>
+  </div>
+
+  <h2>O que o bot NÃO faz</h2>
+  <div class="grid">
+    <div class="card no">
+      <ul>
+        <li>Previsão futura <small>ele informa só a temperatura atual, não a de amanhã/próximos dias</small></li>
+        <li>Cidades fora do Brasil <small>o foco é cidades brasileiras</small></li>
+        <li>Conversas fora do tema <small>ele responde apenas sobre temperatura de cidades</small></li>
+      </ul>
+    </div>
+    <div class="card no">
+      <ul>
+        <li>Interpretar saudações ou frases longas <small>"oi", "qual o clima?" — ver abaixo o que acontece</small></li>
+        <li>Outros idiomas <small>o conteúdo é em português</small></li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Quando a cidade não é reconhecida</h2>
+  <div class="card">
+    <p style="color:var(--mut)">Se a mensagem não for uma cidade que a base localize (uma saudação, uma frase solta, um nome errado ou uma cidade fora do Brasil), o bot responde orientando o formato correto:</p>
+    <div class="reply">❌ Cidade não encontrada. Use o formato Cidade,UF,BR (ex.: São Paulo,SP,BR).</div>
+  </div>
+  <div class="callout" style="margin-top:14px">
+    Isso é o comportamento esperado: a mensagem serve para <b>orientar</b> você a informar a cidade no formato certo. Basta reenviar com o nome da cidade.
+  </div>
+
+  <footer>Projeto acadêmico de pós-graduação em Automação &nbsp;•&nbsp; Felipe Mastrangelo</footer>
+</div>
+</body>
+</html>
